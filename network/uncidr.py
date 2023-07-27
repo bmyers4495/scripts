@@ -34,7 +34,7 @@ def getSubnetInfo(notation):
 
 def getRange(ipByte, subnetByte):
     i=7
-    magicNumber = []
+    magicNumberList = []
     byteList = []
     while ipByte > 0 or subnetByte > 0:
         subCheck = 2**i
@@ -45,7 +45,7 @@ def getRange(ipByte, subnetByte):
             ipByteCheck = False
         if subnetByte >= subCheck:
             subnetByte = subnetByte-subCheck
-            magicNumber.append(subnetByte)
+            magicNumberList.append(subnetByte)
             subByteCheck = True
         else:
             subByteCheck = False
@@ -53,8 +53,13 @@ def getRange(ipByte, subnetByte):
             byteList.append(2**i)
         i = i -1
         i=0
+    if magicNumberList:
+        magicNumber=magicNumberList[0]
+        
+    else:
+        magicNumber = 0
     rangeInfo = {
-            "broadcast" : magicNumber[-2] + sum(byteList)-1,
+            "broadcast" : magicNumber + sum(byteList)-1,
             "netIDHost" : sum(byteList)
         }
         
@@ -77,13 +82,22 @@ def getNetInfo(ipAddr, maxHosts, subnetMask):
     broadcast = IP[:]
     netID = IP[:]
     if targetNode != 3:
-        n=2
-        netID[3] = 0
-        broadcast[3] = 255
+        n=3
         while subnetMask[n] == 0:
             broadcast[n] = 255
             netID[n]=0
             n-=1
+    else:
+        n = 0
+        nL= []
+        while targetByte >= n:
+            nL.append(n)
+            n+=maxHosts
+        netID[3] = nL[-1]
+        broadcast[3] = nL[-1]
+
+        
+        
     gateway=netID[:]
     gateway[3]+=1
     firstIP = gateway[:]
