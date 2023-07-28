@@ -90,12 +90,11 @@ def getNetInfo(ipAddr, maxHosts, subnetMask):
     else:
         n = 0
         nL= []
-        while targetByte >= n:
+        while int(netID[3])>n:
             nL.append(n)
-            n+=maxHosts
-        netID[3] = nL[-1]
-        broadcast[3] = nL[-1]
-
+            n+=maxHosts+2
+        netID[3] = nL[-1] if nL != [0] else 0
+        broadcast[3] = nL[-1]+maxHosts if nL !=[0] else maxHosts
         
         
     gateway=netID[:]
@@ -115,6 +114,9 @@ def getNetInfo(ipAddr, maxHosts, subnetMask):
 
 
 def main():
+   if len(sys.argv) != 2:
+       print("Usage: python uncidr.py <UP/CIDR>")
+       sys.exit(1)
    cidrIP = sys.argv[1]
    IP = cidrIP.split('/')[0]
    notation = int(cidrIP.split('/')[1])
